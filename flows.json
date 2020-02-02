@@ -1,0 +1,471 @@
+[
+    {
+        "id": "1a2b9974.cd7a37",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "482b8a66.012d64",
+        "type": "mqtt in",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "topic": "sensors/#",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "2358c344.0e63cc",
+        "x": 120,
+        "y": 140,
+        "wires": [
+            [
+                "2818dc87.af2734"
+            ]
+        ]
+    },
+    {
+        "id": "2818dc87.af2734",
+        "type": "function",
+        "z": "1a2b9974.cd7a37",
+        "name": "MQTT to InfluxDB",
+        "func": "var tokens = msg.topic.split(\"/\");\nvar dest = tokens[tokens.length-1];\nmsg.url =\"http://localhost:8086/write?db=greenhouse\";\nmsg.payload = tokens[2] + \",device=\" + tokens[1] + \" value=\" + msg.payload;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 339,
+        "y": 142,
+        "wires": [
+            [
+                "ef634d1e.b0f48",
+                "91a0e6bf.3e9518"
+            ]
+        ]
+    },
+    {
+        "id": "ef634d1e.b0f48",
+        "type": "http request",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "http://localhost:8086/write?db=greenhouse",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 562,
+        "y": 141,
+        "wires": [
+            [
+                "21abd7ce.7e9fc8"
+            ]
+        ]
+    },
+    {
+        "id": "21abd7ce.7e9fc8",
+        "type": "debug",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 756,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "91a0e6bf.3e9518",
+        "type": "debug",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "false",
+        "x": 546,
+        "y": 281,
+        "wires": []
+    },
+    {
+        "id": "ed986b74.86e208",
+        "type": "mqtt in",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "topic": "rfid/scan",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "451115a9.bff35c",
+        "x": 120,
+        "y": 500,
+        "wires": [
+            [
+                "5cc2f306.03ca5c",
+                "2aaa5d49.ca1f32"
+            ]
+        ]
+    },
+    {
+        "id": "7798f69d.0e99c8",
+        "type": "debug",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 970,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "a6b9721.cc2409",
+        "type": "function",
+        "z": "1a2b9974.cd7a37",
+        "name": "Create query in topic",
+        "func": "var out = \"INSERT INTO RFID (Date,Timestamp,Topic,UID,Name,Status)\"\nout = out + \"VALUES ('\"+ msg.mydate + \"','\" + msg.mytime + \"','\" \nout = out + msg.topic + \"','\" + msg.payload.slice(0,11) + \"','Engineer 1','\"\nout = out +  msg.payload.slice(11,15) + \"');\"\nmsg.topic=out;\n\nreturn msg;\n\n//new Date().toISOString()\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 640,
+        "y": 540,
+        "wires": [
+            [
+                "7798f69d.0e99c8",
+                "7aa942fb.64164c"
+            ]
+        ]
+    },
+    {
+        "id": "1ec17c1c.3c3f04",
+        "type": "debug",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 1050,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "7aa942fb.64164c",
+        "type": "mysql",
+        "z": "1a2b9974.cd7a37",
+        "mydb": "b90a32e2.6ed29",
+        "name": "mydb",
+        "x": 930,
+        "y": 460,
+        "wires": [
+            [
+                "1ec17c1c.3c3f04"
+            ]
+        ]
+    },
+    {
+        "id": "5cc2f306.03ca5c",
+        "type": "debug",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 430,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "566d650a.0a193c",
+        "type": "simpletime",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "x": 430,
+        "y": 540,
+        "wires": [
+            [
+                "a6b9721.cc2409"
+            ]
+        ]
+    },
+    {
+        "id": "2aaa5d49.ca1f32",
+        "type": "switch",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "C9 6B 6A B9  IN",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "C9 6B 6A B9 OUT",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "66 37 7F 25  IN",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "66 37 7F 25 OUT",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "DB 64 AC 21  IN",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "DB 64 AC 21 OUT",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 6,
+        "x": 130,
+        "y": 620,
+        "wires": [
+            [
+                "566d650a.0a193c"
+            ],
+            [
+                "566d650a.0a193c"
+            ],
+            [
+                "49d9daa5.534904"
+            ],
+            [
+                "49d9daa5.534904"
+            ],
+            [
+                "e9187c39.10183"
+            ],
+            [
+                "e9187c39.10183"
+            ]
+        ]
+    },
+    {
+        "id": "db786f66.d5ed3",
+        "type": "function",
+        "z": "1a2b9974.cd7a37",
+        "name": "Create query in topic",
+        "func": "var out = \"INSERT INTO RFID (Date,Timestamp,Topic,UID,Name,Status)\"\nout = out + \"VALUES ('\"+ msg.mydate + \"','\" + msg.mytime + \"','\" \nout = out + msg.topic + \"','\" + msg.payload.slice(0,11) + \"','Engineer 2','\"\nout = out +  msg.payload.slice(11,15) + \"');\"\nmsg.topic=out;\n\nreturn msg;\n\n//new Date().toISOString()\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 640,
+        "y": 600,
+        "wires": [
+            [
+                "7aa942fb.64164c",
+                "dd86bc5.c5e4e4"
+            ]
+        ]
+    },
+    {
+        "id": "49d9daa5.534904",
+        "type": "simpletime",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "x": 430,
+        "y": 600,
+        "wires": [
+            [
+                "db786f66.d5ed3"
+            ]
+        ]
+    },
+    {
+        "id": "bcbd445c.7cb468",
+        "type": "function",
+        "z": "1a2b9974.cd7a37",
+        "name": "Create query in topic",
+        "func": "var out = \"INSERT INTO RFID (Date,Timestamp,Topic,UID,Name,Status)\"\nout = out + \"VALUES ('\"+ msg.mydate + \"','\" + msg.mytime + \"','\" \nout = out + msg.topic + \"','\" + msg.payload.slice(0,11) + \"','Engineer 3','\"\nout = out +  msg.payload.slice(11,15) + \"');\"\nmsg.topic=out;\n\nreturn msg;\n\n//new Date().toISOString()\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 640,
+        "y": 660,
+        "wires": [
+            [
+                "7aa942fb.64164c",
+                "be540072.97126"
+            ]
+        ]
+    },
+    {
+        "id": "e9187c39.10183",
+        "type": "simpletime",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "x": 430,
+        "y": 660,
+        "wires": [
+            [
+                "bcbd445c.7cb468"
+            ]
+        ]
+    },
+    {
+        "id": "dd86bc5.c5e4e4",
+        "type": "debug",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 934.4661254882812,
+        "y": 592.7821044921875,
+        "wires": []
+    },
+    {
+        "id": "be540072.97126",
+        "type": "debug",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 970,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "5f6dd1d3.76f47",
+        "type": "mqtt out",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "topic": "esp32/output",
+        "qos": "",
+        "retain": "",
+        "broker": "16d1b98e.2ea6b6",
+        "x": 290,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "27313f61.e67e6",
+        "type": "ui_switch",
+        "z": "1a2b9974.cd7a37",
+        "name": "",
+        "label": "Output",
+        "group": "67c69a83.e81eb4",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "x": 149,
+        "y": 340,
+        "wires": [
+            [
+                "5f6dd1d3.76f47"
+            ]
+        ]
+    },
+    {
+        "id": "2358c344.0e63cc",
+        "type": "mqtt-broker",
+        "z": "1a2b9974.cd7a37",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "node-red",
+        "usetls": false,
+        "verifyservercert": true,
+        "compatmode": true,
+        "keepalive": "15",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": ""
+    },
+    {
+        "id": "451115a9.bff35c",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "b90a32e2.6ed29",
+        "type": "MySQLdatabase",
+        "z": "",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "mydb",
+        "tz": "UTC+08:04"
+    },
+    {
+        "id": "16d1b98e.2ea6b6",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "67c69a83.e81eb4",
+        "type": "ui_group",
+        "z": "",
+        "name": "Main",
+        "tab": "d1c02141.dcb59",
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "d1c02141.dcb59",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Dashboard",
+        "icon": "dashboard"
+    }
+]
