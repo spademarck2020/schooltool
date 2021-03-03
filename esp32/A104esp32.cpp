@@ -3,8 +3,8 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
-#define SS_PIN 11
-#define RST_PIN 10
+#define SS_PIN 21
+#define RST_PIN 3
 MFRC522 mfrc522(SS_PIN, RST_PIN);  
 
 
@@ -17,7 +17,7 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 long lastMsg = 0;
 
-const int relayPin = 4;
+const int relayPin = 9;
 const int buzzerPin = 5;
 bool isOn = false;
 
@@ -119,6 +119,10 @@ void loop() {
             delay(3000);
             digitalWrite(buzzerPin,LOW);
             delay(2000);
+            digitalWrite(buzzerPin,HIGH);
+            delay(3000);
+            digitalWrite(buzzerPin,LOW);
+            delay(2000);
             digitalWrite(relayPin, HIGH);
             isOn = true;
         }
@@ -137,7 +141,7 @@ void loop() {
             digitalWrite(buzzerPin,HIGH);
             delay(1000);
             digitalWrite(buzzerPin,LOW);
-            delay(25000);
+            delay(10000);
             digitalWrite(relayPin, LOW);
             isOn = false;
         }
